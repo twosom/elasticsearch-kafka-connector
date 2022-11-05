@@ -11,6 +11,7 @@ import org.icloud.pipeline.config.ElasticSearchSinkConnectorConfig;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -42,7 +43,7 @@ public class ElasticSearchSinkConnector extends SinkConnector {
     public List<Map<String, String>> taskConfigs(int maxTasks) {
         return IntStream.range(0, maxTasks)
                 .mapToObj(e -> (Map<String, String>) new HashMap<>(configProperties))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
