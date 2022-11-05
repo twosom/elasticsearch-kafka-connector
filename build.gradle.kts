@@ -1,4 +1,5 @@
 plugins {
+    application
     id("java")
 }
 
@@ -10,6 +11,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
+application {
+    mainClass.set("org.icloud.pipeline.ElasticSearchSinkConnector")
+}
+
 repositories {
     mavenCentral()
 }
@@ -17,7 +22,7 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10")
-    implementation("org.apache.kafka:connect-api:2.6.0")
+    implementation("org.apache.kafka:connect-api:3.3.1")
     implementation("org.slf4j:slf4j-simple:2.0.3")
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -29,10 +34,22 @@ tasks.getByName<Test>("test") {
 }
 
 tasks {
-    jar {
+    val fatJar = register<Jar>("fatJar") {
+        dependsOn.addAll(
+            listOf(
+                "compileJava",
+                "processResources"
+            )
+        )
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        val map = configurations.runtimeClasspath.get()
-            .map { if (it.isDirectory) it else zipTree(it) }
-        from(map)
+        manifest { attributes(mapOf("Main-Class" to application.mainClass)) }
+        val sourcesMain = sourceSets.main.get()
+        val contents = configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) } +
+                sourcesMain.output
+        from(contents)
+    }
+    jar {
+        dependsOn(fatJar) // Trigger fat jar creation during build
     }
 }
