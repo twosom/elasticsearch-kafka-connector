@@ -9,11 +9,29 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    implementation("com.google.code.gson:gson:2.10")
+    implementation("org.apache.kafka:connect-api:3.3.1")
+    implementation("org.slf4j:slf4j-simple:2.0.3")
+    compileOnly("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
+    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.6")
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks {
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        val map = configurations.compileClasspath.get()
+            .distinct()
+            .map { if (it.isDirectory) it else zipTree(it) }
+        println(map)
+        from(
+            map
+        )
+    }
 }
