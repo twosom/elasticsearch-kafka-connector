@@ -9,9 +9,7 @@ import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
-import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -62,21 +60,7 @@ public class ElasticSearchSinkTask extends SinkTask {
                 .map(record -> new Gson().fromJson(record.value().toString(), Map.class))
                 .map(map -> new IndexRequest(config.getString(ES_INDEX)).source(map, XContentType.JSON))
                 .forEach(bulkRequest::add);
-        elasticClient.bulkAsync(bulkRequest, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(BulkResponse bulkResponse) {
-                if (bulkResponse.hasFailures()) {
-                    log.error(bulkResponse.buildFailureMessage());
-                } else {
-                    log.info("bulk save success");
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        });
+        elasticClient.bulkAsync(bulkRequest, RequestOptions.DEFAULT, new MyActionListener());
     }
 
     @Override

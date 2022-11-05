@@ -26,7 +26,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.3")
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
-    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.6")
+    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.7")
 }
 
 tasks.getByName<Test>("test") {
@@ -50,6 +50,6 @@ tasks {
         from(contents)
     }
     jar {
-        dependsOn(fatJar) // Trigger fat jar creation during build
+        dependsOn(fatJar)
     }
 }
