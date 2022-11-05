@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10")
-    implementation("org.apache.kafka:connect-api:3.3.1")
+    implementation("org.apache.kafka:connect-api:2.6.0")
     implementation("org.slf4j:slf4j-simple:2.0.3")
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -33,9 +33,6 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         val map = configurations.runtimeClasspath.get()
             .map { if (it.isDirectory) it else zipTree(it) }
-        println(map)
-        from(
-            map
-        )
+        from(map)
     }
 }
