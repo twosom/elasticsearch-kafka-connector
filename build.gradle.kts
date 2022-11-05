@@ -31,8 +31,7 @@ tasks.getByName<Test>("test") {
 tasks {
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        val map = configurations.compileClasspath.get()
-            .distinct()
+        val map = configurations.runtimeClasspath.get()
             .map { if (it.isDirectory) it else zipTree(it) }
         println(map)
         from(
